@@ -1,0 +1,11 @@
+/node_modules
+src/db/dbold.ts
+/yarn.lock
+/routes/buy-nft.ts
+/test/mintNFT-test.test.ts
+/test/generate-signature-t.test.ts
+prisma/migrations/
+artifacts/
+cache/
+coverage/
+notes.txt

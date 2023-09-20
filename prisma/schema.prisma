@@ -1,0 +1,142 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model users {
+  id            Int           @id @default(autoincrement()) // id in database
+  issuer        String        @unique // The Decentralized ID of the user. Recommended value to be used as the user ID
+  name          String        @unique @db.VarChar(25) // Name(nickname) name of the user displayed on the website 
+  description   String // Description of the user displayed on website
+  tag           Int // Tags describing User Accounts role (like "Music Producer", "Content Creator","Rapper", "Singer", "Fan") not applicable when role is other than User 
+  walletAddress String        @unique @db.VarChar(42) // Wallet address (Hex number)
+  walletType    String        @db.VarChar(10) // Wallet type - blockchain network like "ETH"
+  coins         Int           @default(0) // coin balance of user 
+  role          Int           @default(0) // Role of user from enum "UserRole"
+  email         String        @unique @db.VarChar(30) // email address of user
+  whenSignedUp  DateTime      @default(now()) // date and time when user account was created
+  lastLoginAt   Int // date and time when user last logged in
+  nftOwned      Int[] // nfts owned by user
+  nftRented     Int[] // nfts rented by user
+  website       String
+  revenue       userRevenue[]
+  listings      listing[]
+}
+
+model userRevenue {
+  id           Int    @default(autoincrement()) // id in database
+  user         users  @relation(fields: [issuer], references: [issuer])
+  issuer       String
+  month        Int
+  year         Int
+  rentRevenue  Int    @default(0)
+  sellRevenue  Int    @default(0)
+  totalRevenue Int    @default(0)
+  amountRented Int    @default(0)
+  amountSold   Int    @default(0)
+
+  @@id([issuer, month, year])
+}
+
+model listing {
+  //General data
+  id                   Int          @id @default(autoincrement()) // id in database
+  name                 String       @db.VarChar(50) // Name of NFT 
+  price                Float        @db.Real // Price of NFT when listed 
+  quantity             Int // Number of NFTs minted
+  actualQuantity       Int // Number of NFT's after transactions
+  tokensInStock        Int // Number of NFTs listed and not sold
+  tokensListed         Int // Number of NFTs listed
+  availableQuantity    Int // Number of available NFT's to listing 
+  description          String       @db.VarChar(500) // Description of the NFT
+  imageURL             String       @db.VarChar(500) // URL to url (for example ipfs address) where the image file is
+  musicURL             String       @db.VarChar(500) // URL to url (for example ipfs address) where the music file is
+  //Date
+  nftMintTime          DateTime     @default(now()) // When the NFT was minted
+  nftListTime          DateTime? // When the NFT was listed
+  //Id's
+  contractId           Int          @unique // Token(NFT) id on contract (Edition/ERC1155)
+  //Addresses
+  contractAddress      String       @db.VarChar(42) // Address (Hex number) of NFT contract (Edition/ERC1155)
+  creatorWalletAddress String       @db.VarChar(42) // Wallet address (Hex number) of person who minted/created the nft/song
+  //Creator
+  creator              users[] //@relation(fields: [creatorWalletAddress], references: [walletAddress])
+  //Standards
+  tokenStandard        String       @db.VarChar(10) // Standard of contract on which NFT was created (like "ERC1155")
+  //Label info
+  labelWallet          String       @db.VarChar(42) // Wallet address (Hex number) of label which currently have rights to this song
+  //isAble
+  isSellable           Boolean // is nft set to be possible to be bought 
+  isRentable           Boolean // is nft set to be possible to be rented
+  //Rent info
+  rentPrice            Float        @db.Real // Price of renting per day
+  numberOfRents        Int // How many time the NFT was rented
+  numberOfCurrentRents Int // How many NFTs is currently rented
+  totalRentTime        Int          @default(0) // Total rent time in days
+  //Ranking points
+  userLikes            Int // number of likes given to this song
+  usersWhoLiked        String[]     @default([]) // List of users who liked this nft
+  usersWhoDisliked     String[]     @default([]) // List of users who disliked this nft
+  userDislikes         Int // number of dislikes given to this song
+  moderatorPoints      Int // number of points given by moderator to change rankings points
+  rankingPoints        Int // sum of points result will decided about place in ranking
+  highestRank          Int // highest position in the ranking achieved by this nft
+  views                Int // number of users who clicked or smth
+  downloads            Int // number of downloads of this music
+  //Genre info
+  genre                Int // genre of the (music set as enum)
+  genreEn              genre        @relation(fields: [genre], references: [id])
+  //Moderation
+  isFlagged            Boolean      @default(false) // if nft is marked by moderator as flagged - to be controlled by admin
+  flagDescription      String? // Why the nft was flagged
+  //Collection
+  collections          collection[] // @default([])
+}
+
+model collection {
+  id             Int       @id @default(autoincrement()) // id in database
+  name           String    @unique @db.VarChar(150)
+  nfts           Int[]
+  listings       listing[]
+  creatorAddress String    @db.VarChar(42)
+  createdDate    DateTime  @default(now())
+  rating         Int       @default(0)
+  avatarImage    String
+  bannerImage    String
+  description    String
+  creatorName    String
+}
+
+model coin {
+  name        String @unique
+  symbol      String @id
+  icon        String
+  price       Float  @db.Real // Price to buy one coin - [crypto/number of coins] - to buy n number of coins you need to pay price*n
+  totalNumber Int
+}
+
+model genre {
+  id      Int       @id
+  genre   String
+  listing listing[]
+}
+
+enum UserRole {
+  User
+  Label
+  SuperAdmin
+  Moderator
+  Blacklist
+}
+
+enum UserTags {
+  MusicProducer
+  ContentCreator
+  Rapper
+  Singer
+  Fan
+}

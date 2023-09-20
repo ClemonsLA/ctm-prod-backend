@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+      "moduleResolution": "node",
+      "target": "ES2022",                          
+      "allowJs": true,
+      "resolveJsonModule": true,
+      "outDir": "dist",     
+      "rootDir": "src",
+      "strict": true,         
+      //"noImplicitAny": true,
+      "esModuleInterop": true,
+      "skipLibCheck": true
+    },
+    "include": ["**/*.ts"],
+    "exclude": ["node_modules"]
+  }

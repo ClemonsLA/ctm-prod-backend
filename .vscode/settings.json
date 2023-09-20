@@ -1,0 +1,22 @@
+{
+    "todohighlight.keywords": [
+        {
+            "text": "#swagger",
+            "color": "#fcd9f7",
+            "backgroundColor": "rgba(252, 136, 196, 0.4)",
+            "overviewRulerColor": "rgba(252, 136, 196, 0.1)",
+            //"border": "1px solid DarkKhaki",
+            "borderRadius": "10px",
+            "isWholeLine": true,
+        },
+        /*  {
+            "text": "router.",
+            "color": "",
+            "backgroundColor": "rgba(110, 154, 189, 0.35)",
+            "overviewRulerColor": "rgba(110, 154, 189, 0.1)",
+            //  "border": "5px solid DarkKhaki",
+            "borderRadius": "5px",
+            "isWholeLine": true
+        } */
+    ],
+}
